@@ -12,8 +12,8 @@ import org.mozilla.javascript.Scriptable;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView entry;
-    private TextView calculation;
+    private TextView calculation; //The small bar at the top - this shows what was passed to javascript for evaluation.
+    private TextView entry; //The large text field below that - this is what the user types into.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,43 +22,25 @@ public class MainActivity extends AppCompatActivity {
 
         entry = findViewById(R.id.entry);
         calculation = findViewById(R.id.calculation);
-
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 switch(v.getId()){
-                    case R.id.zero:
-                    case R.id.one:
-                    case R.id.two:
-                    case R.id.three:
-                    case R.id.four:
-                    case R.id.five:
-                    case R.id.six:
-                    case R.id.seven:
-                    case R.id.eight:
-                    case R.id.nine:
-                    case R.id.plus:
-                    case R.id.minus:
-                    case R.id.multiply:
-                    case R.id.divide:
-                    case R.id.openBracket:
-                    case R.id.closeBracket:
-                    case R.id.dot:
 
-                        entry.setText(entry.getText().toString() + ((Button)v).getText());
-                        break;
-
+                    //reset both our fields of all text.
                     case R.id.clear:
                         calculation.setText("");
                         entry.setText("");
                         entry.setHint("");
                         break;
 
+                    //remove last character in the entry field (if any).
                     case R.id.backspace:
                         int length = entry.getText().toString().length();
                         if(length > 0) entry.setText(entry.getText().toString().substring(0,length-1));
                         break;
 
+                    //submit all the keys entered into the entry field for evaluation.
                     case R.id.enter1:
                     case R.id.enter2:
                         if(entry.getText().length() > 0) {
@@ -71,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                             Context cx = Context.enter();
                             cx.setOptimizationLevel(-1);
                             Scriptable scope = cx.initStandardObjects();
-                            String javascript = "eval(" + calculation.getText() + ");";
+                            String javascript = "eval(" + calculation.getText() + ");"; //the eval function is technically redundant.
 
                             try {
                                 Object result = cx.evaluateString(scope, javascript, "<cmd>", 1, null);
@@ -83,10 +65,15 @@ public class MainActivity extends AppCompatActivity {
                             /////////////////////////////////////////////////////////////////////////////////////////////////////////
                             /////////////////////////////////////////////////////////////////////////////////////////////////////////
                         }
+                        break;
+
+                    //For all normal buttons: just add their key value to the entry field - that's it.
+                    default:
+                        entry.setText(entry.getText().toString() + ((Button)v).getText());
                 }
             }
         };
-
+        //Add the above listener to all the buttons...
         findViewById(R.id.zero).setOnClickListener(listener);
         findViewById(R.id.one).setOnClickListener(listener);
         findViewById(R.id.two).setOnClickListener(listener);
@@ -108,5 +95,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.enter2).setOnClickListener(listener);
         findViewById(R.id.clear).setOnClickListener(listener);
         findViewById(R.id.backspace).setOnClickListener(listener);
+        //...and we're done!
     }
 }
